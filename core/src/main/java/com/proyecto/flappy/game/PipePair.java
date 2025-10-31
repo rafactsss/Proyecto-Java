@@ -3,38 +3,78 @@ package com.proyecto.flappy.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.MathUtils;
 import com.proyecto.flappy.config.GameConfig;
 
 public class PipePair {
-    public Rectangle top, bottom;
-    private Texture topTex, bottomTex;
-    private float x;
 
-    public PipePair(float startX) {
-        x = startX;
-        float gapY = 250 + (float) Math.random() * 200;
-        topTex = new Texture("pipe_top.png");
-        bottomTex = new Texture("pipe_bottom.png");
+    private static Texture TEX_TOP;
+    private static Texture TEX_BOTTOM;
 
-        top = new Rectangle(x, gapY + GameConfig.PIPE_GAP / 2, GameConfig.PIPE_WIDTH, 500);
-        bottom = new Rectangle(x, gapY - 500 - GameConfig.PIPE_GAP / 2, GameConfig.PIPE_WIDTH, 500);
+    public static void loadTextures() {
+        if (TEX_TOP == null)    TEX_TOP    = new Texture("pipe_top.png");
+        if (TEX_BOTTOM == null) TEX_BOTTOM = new Texture("pipe_bottom.png");
+    }
+    public static void disposeTextures() {
+        if (TEX_TOP != null)    { TEX_TOP.dispose();    TEX_TOP = null; }
+        if (TEX_BOTTOM != null) { TEX_BOTTOM.dispose(); TEX_BOTTOM = null; }
     }
 
-    public void update(float delta) {
-        x -= GameConfig.PIPE_SPEED * delta;
+    private float x;
+    private float width;
+    private float centerY;
+    private float gapSize;
+    private float speed;
+
+    public boolean scored = false;
+
+    private final Rectangle top = new Rectangle();
+    private final Rectangle bottom = new Rectangle();
+
+    public PipePair(float startX, float centerY, float gapSize, float speed) {
+        loadTextures();
+        this.x = startX;
+        this.centerY = centerY;
+        this.gapSize = gapSize;
+        this.speed = speed;
+        this.width = GameConfig.PIPE_WIDTH;
+        recomputeRects();
+    }
+
+    public PipePair(float startX) {
+        this(startX,
+             MathUtils.clamp(GameConfig.WORLD_HEIGHT * 0.5f,
+                             GameConfig.GAP_MARGIN_BOTTOM + GameConfig.PIPE_GAP_START * 0.5f,
+                             GameConfig.WORLD_HEIGHT - (GameConfig.GAP_MARGIN_TOP + GameConfig.PIPE_GAP_START * 0.5f)),
+             GameConfig.PIPE_GAP_START,
+             GameConfig.PIPE_BASE_SPEED);
+    }
+
+    public void update(float dt) {
+        x -= speed * dt;
         top.setX(x);
         bottom.setX(x);
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(topTex, top.x, top.y);
-        batch.draw(bottomTex, bottom.x, bottom.y);
+        batch.draw(TEX_TOP, top.x, top.y + top.height, top.width, -top.height); // invertido
+        batch.draw(TEX_BOTTOM, bottom.x, bottom.y, bottom.width, bottom.height);
     }
 
-    public void dispose() {
-        topTex.dispose();
-        bottomTex.dispose();
+    private void recomputeRects() {
+        float half = gapSize * 0.5f;
+        top.set(x, centerY + half, width, GameConfig.PIPE_HEIGHT);
+        bottom.set(x, centerY - half - GameConfig.PIPE_HEIGHT, width, GameConfig.PIPE_HEIGHT);
     }
 
-    public float getX() { return x; }
+    // ← ESTOS son los getters que te marcan error si faltan
+    public Rectangle getTopBounds()    { return top; }
+    public Rectangle getBottomBounds() { return bottom; }
+    public float getX()        { return x; }
+    public float getRight()    { return x + width; }
+    public boolean isOffScreen(){ return getRight() < 0; }
+    public float getCenterX()  { return x + width * 0.5f; }
+    public void setSpeed(float speed) { this.speed = speed; }
+    public void setGap(float gap)     { this.gapSize = gap; recomputeRects(); }
 }
+
