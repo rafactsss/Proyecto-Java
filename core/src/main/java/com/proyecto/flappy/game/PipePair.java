@@ -2,8 +2,8 @@ package com.proyecto.flappy.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.proyecto.flappy.config.GameConfig;
 
 public class PipePair {
@@ -43,9 +43,11 @@ public class PipePair {
 
     public PipePair(float startX) {
         this(startX,
-             MathUtils.clamp(GameConfig.WORLD_HEIGHT * 0.5f,
-                             GameConfig.GAP_MARGIN_BOTTOM + GameConfig.PIPE_GAP_START * 0.5f,
-                             GameConfig.WORLD_HEIGHT - (GameConfig.GAP_MARGIN_TOP + GameConfig.PIPE_GAP_START * 0.5f)),
+             MathUtils.clamp(
+                 GameConfig.WORLD_HEIGHT * 0.5f,
+                 GameConfig.GAP_MARGIN_BOTTOM + GameConfig.PIPE_GAP_START * 0.5f,
+                 GameConfig.WORLD_HEIGHT - (GameConfig.GAP_MARGIN_TOP + GameConfig.PIPE_GAP_START * 0.5f)
+             ),
              GameConfig.PIPE_GAP_START,
              GameConfig.PIPE_BASE_SPEED);
     }
@@ -57,24 +59,28 @@ public class PipePair {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(TEX_TOP, top.x, top.y + top.height, top.width, -top.height); // invertido
+        // top: se dibuja invertido
+        batch.draw(TEX_TOP, top.x, top.y + top.height, top.width, -top.height);
+        // bottom: normal
         batch.draw(TEX_BOTTOM, bottom.x, bottom.y, bottom.width, bottom.height);
     }
 
     private void recomputeRects() {
         float half = gapSize * 0.5f;
+        // el rect del TOP arranca en el borde superior del gap y crece hacia arriba
         top.set(x, centerY + half, width, GameConfig.PIPE_HEIGHT);
+        // el rect del BOTTOM tiene su top en (center - half), y baja PIPE_HEIGHT
         bottom.set(x, centerY - half - GameConfig.PIPE_HEIGHT, width, GameConfig.PIPE_HEIGHT);
     }
 
-    // ← ESTOS son los getters que te marcan error si faltan
+    // --- getters usados por CollisionSystem / lógica
     public Rectangle getTopBounds()    { return top; }
     public Rectangle getBottomBounds() { return bottom; }
-    public float getX()        { return x; }
-    public float getRight()    { return x + width; }
-    public boolean isOffScreen(){ return getRight() < 0; }
-    public float getCenterX()  { return x + width * 0.5f; }
-    public void setSpeed(float speed) { this.speed = speed; }
-    public void setGap(float gap)     { this.gapSize = gap; recomputeRects(); }
-}
+    public float getX()                { return x; }
+    public float getRight()            { return x + width; }
+    public boolean isOffScreen()       { return getRight() < 0; }
+    public float getCenterX()          { return x + width * 0.5f; }
 
+    public void setSpeed(float speed)  { this.speed = speed; }
+    public void setGap(float gap)      { this.gapSize = gap; recomputeRects(); }
+}
