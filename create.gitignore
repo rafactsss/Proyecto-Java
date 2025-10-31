@@ -1,0 +1,22 @@
+# Gradle / builds
+.gradle/
+build/
+**/build/
+bin/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# LibGDX típicos
+**/.apt_generated/
+**/local.properties
