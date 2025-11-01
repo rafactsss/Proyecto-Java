@@ -1,33 +1,60 @@
 # SpaceNav2024
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+Videojuego desarrollado con LibGDX. Este documento describe los requisitos y el procedimiento para ejecutar correctamente el programa utilizando Gradle.
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+## Requisitos
 
-## Platforms
+Antes de ejecutar el proyecto se debe contar con lo siguiente:
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+- JDK 11 o JDK 17 instalado en el sistema
+- Git (opcional, solo si se desea clonar el repositorio)
+- No es necesario instalar Gradle, ya que el proyecto incluye Gradle Wrapper
 
-## Gradle
+## Ejecución del programa
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+El proyecto debe ejecutarse mediante Gradle con el fin de garantizar la correcta carga de todos los recursos (imágenes, sonidos, etc.). No se recomienda utilizar “Run As Java Application” en el IDE.
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+### Ejecución desde terminal o consola
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+Ubicarse en la carpeta raíz del proyecto y ejecutar los siguientes comandos:
+
+Windows:
+gradlew :lwjgl3:run
+
+yaml
+Copiar código
+
+macOS / Linux:
+./gradlew :lwjgl3:run
+
+yaml
+Copiar código
+
+Esto iniciará el videojuego en una ventana independiente.
+
+### Ejecución desde Eclipse
+
+1. Importar el proyecto como:
+   File → Import → Gradle → Existing Gradle Project
+
+2. Abrir la vista de tareas de Gradle:
+   Window → Show View → Other → Gradle → Gradle Tasks
+
+3. Ejecutar la tarea correspondiente:
+   lwjgl3 → application → run
+
+## Solución de problemas frecuentes
+
+Si aparecen errores relacionados con dependencias o recursos:
+
+- Actualizar la configuración del proyecto en Eclipse:
+  Click derecho sobre el proyecto → Gradle → Refresh Gradle Project
+  Project → Clean
+
+- Verificar que el JDK configurado en el IDE corresponda a JDK 11 o JDK 17
+
+Si el juego no muestra imágenes o sonidos:
+- Confirmar que los recursos se encuentren en:
+  `lwjgl3/src/main/resources/`
+
+Con estas indicaciones el programa debería ejecutarse correctamente en cualquier equipo compatible.
