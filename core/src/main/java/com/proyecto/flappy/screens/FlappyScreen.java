@@ -14,7 +14,9 @@ import com.proyecto.flappy.game.CollisionSystem;
 import com.proyecto.flappy.game.PipeSystem;
 import com.proyecto.flappy.game.ScoreSystem;
 import com.proyecto.flappy.game.PipePair;
-import com.proyecto.flappy.audio.SoundManager;    
+import com.proyecto.flappy.audio.SoundManager;
+import com.proyecto.flappy.game.factory.GameFactory;
+import com.proyecto.flappy.game.factory.SpaceFactory;
 
 
 public class FlappyScreen extends ScreenAdapter {
@@ -24,6 +26,9 @@ public class FlappyScreen extends ScreenAdapter {
     private final FlappyGame game;
 
     private SpriteBatch batch;
+    
+    private GameFactory factory;
+    
     private BitmapFont font;
     private Texture background;
 
@@ -50,14 +55,22 @@ public class FlappyScreen extends ScreenAdapter {
     public void show() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        background = new Texture(Gdx.files.internal("background.png"));
 
-        SoundManager.load();  // <-- cargar sonidos
-        reset();
+        // Elegimos qué "tema" usar: FACTORÍA ESPACIAL
+        factory = new SpaceFactory();
+
+        // El fondo ahora lo crea la Abstract Factory
+        background = factory.createBackground();
+
+        SoundManager.load();  // cargar sonidos
+        reset();              // crea bird, pipes, etc.
     }
 
+
     private void reset() {
-        bird = new Bird();
+        // AHORA el Bird viene de la Abstract Factory
+        bird = factory.createBird();
+
         pipes = new PipeSystem();
         collisions = new CollisionSystem();
         score = new ScoreSystem();
@@ -68,6 +81,7 @@ public class FlappyScreen extends ScreenAdapter {
         prevScore = 0;
         playedGameOverSfx = false;
     }
+
 
     @Override
     public void render(float dt) {
