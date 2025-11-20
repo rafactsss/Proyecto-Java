@@ -26,4 +26,9 @@ public abstract class Entity {
 
     public Rectangle getBounds() { return bounds; }
     public boolean isActive()    { return active; }
+    
+    public Vector2 getVelocity() {
+        return velocity;
+    }
+
 }
