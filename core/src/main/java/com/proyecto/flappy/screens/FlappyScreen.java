@@ -50,7 +50,7 @@ public class FlappyScreen extends ScreenAdapter {
     public void show() {
         batch = new SpriteBatch();
         font = new BitmapFont();
-        background = new Texture("background.png");
+        background = new Texture(Gdx.files.internal("background.png"));
 
         SoundManager.load();  // <-- cargar sonidos
         reset();

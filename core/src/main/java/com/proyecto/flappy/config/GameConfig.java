@@ -29,6 +29,9 @@ public class GameConfig {
     public static final float SPEED_STEP  = 10f;
     public static final float SPEED_MAX   = 220f;
     public static final float GAP_STEP    = -4f;
+    
+    public static final float BIRD_WIDTH = 40;
+    public static final float BIRD_HEIGHT = 40;
 
     private GameConfig() {}
 }

@@ -1,55 +1,101 @@
 package com.proyecto.flappy.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.proyecto.flappy.config.GameConfig;
+import com.proyecto.flappy.audio.SoundManager;
 
 public class Bird extends Entity implements Collidable {
 
-    private final Texture texture;
-    private float vy = 0f;
-    private final float gravity = -900f;
-    private final float jumpImpulse = 300f;
+    private Texture texture;
+    private TextureRegion region;
+    private Circle circleHitbox;   // opcional: para uso interno si quieres
 
-    // Dibujo y colisión “amables”
-    private static final float DRAW_W = 36f; // pinta más chico que el sprite real
-    private static final float DRAW_H = 26f;
-    private static final float PAD = 4f;     // recorta hitbox por cada lado
+    private final float gravity = -12f; // gravedad “hacia abajo”
 
     public Bird() {
-        // OJO con el nombre: pon el archivo como "bird.png" (todo minúsculas) para evitar líos en otros SO
-        texture = new Texture(Gdx.files.internal("bird.png"));
+        // Carga del sprite
+        texture = new Texture("bird.png");
+        region = new TextureRegion(texture);
 
+        // Posición inicial
         position.set(GameConfig.BIRD_START_X, GameConfig.BIRD_START_Y);
 
-        // hitbox: un poco más chica que el dibujo
-        bounds.set(position.x + PAD, position.y + PAD, DRAW_W - PAD * 2f, DRAW_H - PAD * 2f);
+        // Hitbox rectangular, alineado al tamaño que quieres dibujar
+        bounds.set(position.x, position.y,
+                   GameConfig.BIRD_WIDTH, GameConfig.BIRD_HEIGHT);
+
+        // Hitbox circular opcional, centrado en el pájaro
+        circleHitbox = new Circle(
+                position.x + GameConfig.BIRD_WIDTH / 2f,
+                position.y + GameConfig.BIRD_HEIGHT / 2f,
+                GameConfig.BIRD_WIDTH / 2f
+        );
     }
 
     @Override
-    public void update(float dt) {
-        vy += gravity * dt;
-        position.y += vy * dt;
+    protected void customUpdate(float dt) {
+        // Aplicar gravedad
+        velocity.y += gravity * dt * 60f;
 
-        if (position.y < 0) { position.y = 0; vy = 0; }
-        if (position.y + DRAW_H > GameConfig.WORLD_HEIGHT) {
-            position.y = GameConfig.WORLD_HEIGHT - DRAW_H;
-            vy = 0;
+        // Evitar que se vaya bajo el suelo
+        if (position.y < 0) {
+            position.y = 0;
+            velocity.y = 0;
         }
-        bounds.setPosition(position.x + PAD, position.y + PAD);
-    }
 
-    public void jump() { vy = jumpImpulse; }
+        // bounds se actualiza en applyPhysics(), pero reforzamos por claridad
+        bounds.setPosition(position.x, position.y);
+
+        // Actualizar círculo opcional
+        circleHitbox.setPosition(
+                position.x + GameConfig.BIRD_WIDTH / 2f,
+                position.y + GameConfig.BIRD_HEIGHT / 2f
+        );
+    }
 
     @Override
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y, DRAW_W, DRAW_H);
+        // Dibujar el cohete reescalado al tamaño definido en GameConfig
+        batch.draw(region, position.x, position.y,
+                   GameConfig.BIRD_WIDTH, GameConfig.BIRD_HEIGHT);
     }
 
-    @Override public Rectangle getHitbox() { return bounds; }
-    @Override public void onCollision(Entity other) { active = false; }
+    // --- Comportamiento específico del pájaro ---
 
-    public void dispose() { texture.dispose(); }
+    public void jump() {
+        velocity.y = 250f;
+    }
+
+    // --- Collidable ---
+
+    @Override
+    public Rectangle getHitbox() {
+        // El sistema de colisión trabaja con Rectangle
+        return bounds;
+    }
+
+    @Override
+    public void onCollision(Entity other) {
+        // Qué pasa cuando el pájaro choca
+        active = false;
+        SoundManager.playHit();
+        // Aquí podrías avisar a FlappyScreen que es game over, etc.
+    }
+
+    // Getter opcional si necesitas el hitbox circular en otro lado
+    public Circle getCircleHitbox() {
+        return circleHitbox;
+    }
+
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
+    }
 }
+
