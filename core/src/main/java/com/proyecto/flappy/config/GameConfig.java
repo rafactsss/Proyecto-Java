@@ -30,8 +30,13 @@ public class GameConfig {
     public static final float SPEED_MAX   = 220f;
     public static final float GAP_STEP    = -4f;
     
-    public static final float BIRD_WIDTH = 40;
-    public static final float BIRD_HEIGHT = 40;
+    public static final float BIRD_WIDTH = 70;
+    public static final float BIRD_HEIGHT = 70;
+    
+ // Márgenes para “achicar” la colisión de los pilares
+    public static final float PIPE_COLLISION_INSET_X = 6f; // recorte horizontal
+    public static final float PIPE_COLLISION_INSET_Y = 4f; // recorte vertical
+
 
     private GameConfig() {}
 }
