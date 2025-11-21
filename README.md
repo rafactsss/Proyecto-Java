@@ -1,60 +1,191 @@
-# SpaceNav2024
+# SpaceNav2024 - Flappy Bird Game
 
-Videojuego desarrollado con LibGDX. Este documento describe los requisitos y el procedimiento para ejecutar correctamente el programa utilizando Gradle.
+Un juego estilo Flappy Bird implementado con [LibGDX](https://libgdx.com/), generado con [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
-## Requisitos
+## Descripción del Proyecto
 
-Antes de ejecutar el proyecto se debe contar con lo siguiente:
+SpaceNav2024 es un juego de escritorio que implementa la mecánica clásica de Flappy Bird con un tema espacial. El jugador controla una nave espacial que debe navegar a través de huecos entre obstáculos verticales (tuberías). El juego incluye:
 
-- JDK 11 o JDK 17 instalado en el sistema
-- Git (opcional, solo si se desea clonar el repositorio)
-- No es necesario instalar Gradle, ya que el proyecto incluye Gradle Wrapper
+- Sistema de dificultad progresiva
+- Detección de colisiones precisa
+- Sistema de puntuación
+- Efectos de sonido
+- Múltiples patrones de diseño (Singleton, Template Method, Strategy, Abstract Factory)
 
-## Ejecución del programa
+## Requisitos del Sistema
 
-El proyecto debe ejecutarse mediante Gradle con el fin de garantizar la correcta carga de todos los recursos (imágenes, sonidos, etc.). No se recomienda utilizar “Run As Java Application” en el IDE.
+### Software Necesario
 
-### Ejecución desde terminal o consola
+- **Java Development Kit (JDK)**: Versión 11 o superior
+  - Verifica tu versión con: `java -version`
+  - Descarga desde: [Adoptium](https://adoptium.net/) o [Oracle](https://www.oracle.com/java/technologies/downloads/)
 
-Ubicarse en la carpeta raíz del proyecto y ejecutar los siguientes comandos:
+- **Gradle**: No es necesario instalarlo manualmente, el proyecto incluye Gradle Wrapper
 
-Windows:
-gradlew :lwjgl3:run
+### Requisitos de Hardware
 
-yaml
-Copiar código
+- **Sistema Operativo**: Windows, macOS, o Linux
+- **RAM**: Mínimo 2GB
+- **Espacio en disco**: ~100MB para el proyecto y dependencias
 
-macOS / Linux:
-./gradlew :lwjgl3:run
+## Estructura del Proyecto
 
-yaml
-Copiar código
+```
+SpaceNav2024/
+├── core/                          # Lógica del juego (independiente de plataforma)
+│   └── src/main/java/com/proyecto/flappy/
+│       ├── FlappyGame.java       # Clase principal de la aplicación
+│       ├── config/
+│       │   └── GameConfig.java   # Configuración del juego (Singleton)
+│       ├── screens/
+│       │   └── FlappyScreen.java # Pantalla principal y máquina de estados
+│       ├── game/
+│       │   ├── Entity.java       # Clase base abstracta (Template Method)
+│       │   ├── Bird.java         # Entidad del jugador
+│       │   ├── PipePair.java     # Obstáculos
+│       │   ├── PipeSystem.java   # Sistema de gestión de tuberías
+│       │   ├── CollisionSystem.java
+│       │   ├── ScoreSystem.java
+│       │   └── strategy/         # Patrón Strategy para movimiento
+│       ├── factory/              # Patrón Abstract Factory para temas
+│       └── audio/
+│           └── SoundManager.java
+├── lwjgl3/                        # Plataforma de escritorio (LWJGL3)
+│   └── src/main/java/puppy/code/lwjgl3/
+│       └── Lwjgl3Launcher.java   # Punto de entrada de la aplicación
+├── assets/                        # Recursos del juego
+│   ├── bird.png
+│   ├── pipe_top.png
+│   ├── pipe_bottom.png
+│   └── sounds/
+├── gradle/                        # Gradle Wrapper
+├── gradlew                        # Script de Gradle para Unix/Mac
+├── gradlew.bat                    # Script de Gradle para Windows
+└── build.gradle                   # Configuración de construcción
+```
 
-Esto iniciará el videojuego en una ventana independiente.
+## Plataformas
 
-### Ejecución desde Eclipse
+- **`core`**: Módulo principal con la lógica de la aplicación compartida por todas las plataformas
+- **`lwjgl3`**: Plataforma de escritorio principal usando LWJGL3 (antes llamada 'desktop')
 
-1. Importar el proyecto como:
-   File → Import → Gradle → Existing Gradle Project
+## Compilación y Ejecución
 
-2. Abrir la vista de tareas de Gradle:
-   Window → Show View → Other → Gradle → Gradle Tasks
+### Opción 1: Ejecutar Directamente (Recomendado)
 
-3. Ejecutar la tarea correspondiente:
-   lwjgl3 → application → run
+#### En Windows:
+```bash
+gradlew.bat lwjgl3:run
+```
 
-## Solución de problemas frecuentes
+#### En macOS/Linux:
+```bash
+./gradlew lwjgl3:run
+```
 
-Si aparecen errores relacionados con dependencias o recursos:
+Este comando:
+1. Descarga automáticamente las dependencias necesarias
+2. Compila el proyecto
+3. Ejecuta el juego inmediatamente
 
-- Actualizar la configuración del proyecto en Eclipse:
-  Click derecho sobre el proyecto → Gradle → Refresh Gradle Project
-  Project → Clean
+### Opción 2: Generar JAR Ejecutable
 
-- Verificar que el JDK configurado en el IDE corresponda a JDK 11 o JDK 17
+#### Paso 1: Construir el JAR
 
-Si el juego no muestra imágenes o sonidos:
-- Confirmar que los recursos se encuentren en:
-  `lwjgl3/src/main/resources/`
+**Windows:**
+```bash
+gradlew.bat lwjgl3:jar
+```
 
-Con estas indicaciones el programa debería ejecutarse correctamente en cualquier equipo compatible.
+**macOS/Linux:**
+```bash
+./gradlew lwjgl3:jar
+```
+
+#### Paso 2: Ejecutar el JAR
+
+El archivo JAR se genera en: `lwjgl3/build/libs/SpaceNav2024-1.0.jar`
+
+Para ejecutarlo:
+```bash
+java -jar lwjgl3/build/libs/SpaceNav2024-1.0.jar
+```
+
+### Opción 3: Importar en IDE
+
+#### IntelliJ IDEA:
+1. Abre IntelliJ IDEA
+2. Selecciona `File > Open`
+3. Navega a la carpeta del proyecto y selecciona el archivo `build.gradle`
+4. Haz clic en `Open as Project`
+5. Espera a que Gradle sincronice las dependencias
+6. Ejecuta la clase `Lwjgl3Launcher` (ubicada en `lwjgl3/src/main/java/puppy/code/lwjgl3/Lwjgl3Launcher.java`)
+
+#### Eclipse:
+1. Genera los archivos de proyecto de Eclipse:
+   ```bash
+   ./gradlew eclipse
+   ```
+2. Abre Eclipse
+3. Selecciona `File > Import > Existing Projects into Workspace`
+4. Selecciona la carpeta del proyecto
+5. Ejecuta la clase `Lwjgl3Launcher`
+
+## Tareas de Gradle Útiles
+
+### Construcción y Limpieza
+
+| Comando | Descripción |
+|---------|-------------|
+| `./gradlew build` | Compila y archiva todos los módulos |
+| `./gradlew clean` | Elimina las carpetas `build` con clases compiladas |
+| `./gradlew lwjgl3:jar` | Construye el JAR ejecutable en `lwjgl3/build/libs/` |
+| `./gradlew lwjgl3:run` | Inicia la aplicación directamente |
+
+### IDE
+
+| Comando | Descripción |
+|---------|-------------|
+| `./gradlew idea` | Genera archivos de proyecto de IntelliJ IDEA |
+| `./gradlew eclipse` | Genera archivos de proyecto de Eclipse |
+| `./gradlew cleanIdea` | Elimina datos de proyecto de IntelliJ |
+| `./gradlew cleanEclipse` | Elimina datos de proyecto de Eclipse |
+
+### Flags Útiles
+
+| Flag | Descripción |
+|------|-------------|
+| `--continue` | Los errores no detendrán la ejecución de tareas |
+| `--daemon` | Usa el daemon de Gradle para ejecutar tareas |
+| `--offline` | Usa archivos de dependencias en caché |
+| `--refresh-dependencies` | Fuerza la validación de todas las dependencias |
+
+### Ejemplos de Uso
+
+```bash
+# Limpiar y construir todo el proyecto
+./gradlew clean build
+
+# Ejecutar con daemon para mejor rendimiento
+./gradlew --daemon lwjgl3:run
+
+# Construir sin conexión (usando caché)
+./gradlew --offline lwjgl3:jar
+
+# Limpiar solo el módulo core
+./gradlew core:clean
+```
+
+## Controles del Juego
+
+- **ESPACIO**: Iniciar juego / Hacer saltar la nave
+- **R**: Reiniciar después de Game Over
+- **ESC**: Cerrar el juego
+
+## Configuración del Juego
+
+La configuración del juego se encuentra en `core/src/main/java/com/proyecto/flappy/config/GameConfig.java`:
+
+- Dimensiones de la ventana: 800x480 píxeles
+- FPS objetivo: 60 FPS con VSync habilitado
+- Dificultad progresiva: Aumenta cada
