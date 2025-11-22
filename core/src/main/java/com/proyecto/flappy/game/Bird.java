@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;  
 import com.badlogic.gdx.math.Circle;  
 import com.badlogic.gdx.math.Rectangle;  
+import com.badlogic.gdx.math.Vector2;  
 import com.proyecto.flappy.config.GameConfig;  
 import com.proyecto.flappy.audio.SoundManager;  
 import com.proyecto.flappy.game.strategy.MovementStrategy;  
@@ -20,7 +21,10 @@ public class Bird extends Entity implements Collidable {
     private MovementStrategy movementStrategy = new NormalMovement();  
   
     // MÁRGENES HITBOX  
-    private static final float HITBOX_MARGIN = 7f;  
+    private static final float HITBOX_MARGIN = 6f;  
+      
+    // Hacer velocity público para que las estrategias puedan acceder  
+    public final Vector2 velocity = new Vector2();  
   
     public Bird() {  
         texture = new Texture("bird.png");  
@@ -49,20 +53,19 @@ public class Bird extends Entity implements Collidable {
         this();  
     }  
   
-    // ----- STRATEGY: permitir cambiar en runtime -----  
+    // Método para cambiar estrategia en runtime  
     public void setMovementStrategy(MovementStrategy strategy) {  
         this.movementStrategy = strategy;  
     }  
   
     @Override  
     protected void customUpdate(float dt) {  
-  
         // Strategy controla la física del movimiento  
         if (movementStrategy != null) {  
             movementStrategy.update(this, dt);  
         }  
   
-        // límites del piso  
+        // Límites del piso  
         if (position.y < 0) {  
             position.y = 0;  
             velocity.y = 0;  
@@ -114,4 +117,3 @@ public class Bird extends Entity implements Collidable {
         if (texture != null) texture.dispose();  
     }  
 }
-

@@ -10,8 +10,8 @@ public class GameConfig {
     public final int WORLD_HEIGHT = 480;  
   
     // Bird  
-    public final float BIRD_WIDTH = 50f;   // ajusta según tu sprite bird.png  
-    public final float BIRD_HEIGHT = 50f;  // ajusta según tu sprite bird.png  
+    public final float BIRD_WIDTH = 60f;   // ajusta según tu sprite bird.png  
+    public final float BIRD_HEIGHT = 60f;  // ajusta según tu sprite bird.png  
     public final float BIRD_START_X = 160f;  
     public final float BIRD_START_Y = WORLD_HEIGHT / 2f;
     // Tubos  
