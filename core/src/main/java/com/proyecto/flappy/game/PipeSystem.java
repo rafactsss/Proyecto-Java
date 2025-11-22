@@ -3,6 +3,8 @@ package com.proyecto.flappy.game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;  
 import com.badlogic.gdx.math.MathUtils;  
 import com.proyecto.flappy.config.GameConfig;  
+import com.proyecto.flappy.game.strategy.HorizontalPipeMovement;  
+import com.proyecto.flappy.game.strategy.VerticalPipeMovement;  
   
 import java.util.ArrayDeque;  
 import java.util.Deque;  
@@ -14,11 +16,11 @@ public class PipeSystem {
   
     private float currentSpeed = GameConfig.getInstance().PIPE_BASE_SPEED;  
     private float currentGap   = GameConfig.getInstance().PIPE_GAP_START;  
+      
+    // Flag para saber si ya cambiamos a movimiento vertical  
+    private boolean verticalModeActivated = false;  
   
-    // --- Márgenes de seguridad para un arranque sin "muerte instantánea" ---  
-    /** cuán lejos del borde derecho nace el 1er tubo (en píxeles) */  
     private static final float SAFE_START_OFFSET = 280f;  
-    /** separación mínima entre tubos, por si el cálculo dinámico da demasiado poco */  
     private static final float MIN_SPACING       = 240f;  
   
     public PipeSystem() { reset(); }  
@@ -29,6 +31,7 @@ public class PipeSystem {
         spawnTimer = diffTimer = 0f;  
         currentSpeed = config.PIPE_BASE_SPEED;  
         currentGap   = config.PIPE_GAP_START;  
+        verticalModeActivated = false;  
   
         float x = config.WORLD_WIDTH + 160f;  
         for (int i = 0; i < 3; i++) {   
@@ -37,8 +40,14 @@ public class PipeSystem {
         }  
     }  
   
-    public void update(float dt) {  
+    public void update(float dt, int currentScore) {  
         GameConfig config = GameConfig.getInstance();  
+          
+        // Activar movimiento vertical después del nivel 50  
+        if (currentScore >= 30 && !verticalModeActivated) {  
+            activateVerticalMovement();  
+            verticalModeActivated = true;  
+        }  
           
         for (PipePair p : pipes) p.update(dt);  
   
@@ -48,12 +57,10 @@ public class PipeSystem {
             pipes.add(createPair(nextSpawnX()));  
         }  
   
-        // limpiar los que salieron completamente de pantalla  
         while (!pipes.isEmpty() && pipes.peekFirst().isOffScreen()) {  
             pipes.removeFirst();  
         }  
   
-        // dificultad (más rápido / menos gap)  
         diffTimer += dt;  
         if (diffTimer >= config.DIFF_EVERY_SEC) {  
             diffTimer -= config.DIFF_EVERY_SEC;  
@@ -67,9 +74,17 @@ public class PipeSystem {
             }  
         }  
     }  
+      
+    private void activateVerticalMovement() {  
+        // Cambiar todos los pilares existentes a movimiento vertical  
+        VerticalPipeMovement verticalStrategy = new VerticalPipeMovement();  
+        for (PipePair p : pipes) {  
+            p.setMovementStrategy(verticalStrategy);  
+        }  
+    }  
   
-    public void render(SpriteBatch batch) {  
-        for (PipePair p : pipes) p.render(batch);  
+    public void render(SpriteBatch batch) {   
+        for (PipePair p : pipes) p.render(batch);   
     }  
   
     public Iterable<PipePair> getPipes() { return pipes; }  
@@ -80,10 +95,10 @@ public class PipeSystem {
                 ? config.WORLD_WIDTH + SAFE_START_OFFSET  
                 : pipes.peekLast().getX() + spacingPixels();  
     }  
-  
-    private float spacingPixels() {  
+      
+    private float spacingPixels() {   
         GameConfig config = GameConfig.getInstance();  
-        return currentSpeed * config.PIPE_SPAWN_EVERY * 1.35f;  
+        return currentSpeed * config.PIPE_SPAWN_EVERY * 1.35f;   
     }  
   
     private PipePair createPair(float startX) {  
@@ -91,7 +106,15 @@ public class PipeSystem {
         float minC = config.GAP_MARGIN_BOTTOM + currentGap * 0.5f;  
         float maxC = config.WORLD_HEIGHT - (config.GAP_MARGIN_TOP + currentGap * 0.5f);  
         float cy = MathUtils.random(minC, maxC);  
-        return new PipePair(startX, cy, currentGap, currentSpeed);  
+          
+        PipePair pair = new PipePair(startX, cy, currentGap, currentSpeed);  
+          
+        // Si ya estamos en modo vertical, aplicar la estrategia vertical  
+        if (verticalModeActivated) {  
+            pair.setMovementStrategy(new VerticalPipeMovement());  
+        }  
+          
+        return pair;  
     }  
       
     public void dispose() {  

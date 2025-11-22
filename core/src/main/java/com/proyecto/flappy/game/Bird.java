@@ -21,7 +21,7 @@ public class Bird extends Entity implements Collidable {
     private MovementStrategy movementStrategy = new NormalMovement();  
   
     // MÁRGENES HITBOX  
-    private static final float HITBOX_MARGIN = 6f;  
+    private static final float HITBOX_MARGIN = 12f;  
       
     // Hacer velocity público para que las estrategias puedan acceder  
     public final Vector2 velocity = new Vector2();  

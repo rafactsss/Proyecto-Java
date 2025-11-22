@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;  
 import com.badlogic.gdx.math.Rectangle;  
 import com.proyecto.flappy.config.GameConfig;  
+import com.proyecto.flappy.game.strategy.PipeMovementStrategy;  
+import com.proyecto.flappy.game.strategy.HorizontalPipeMovement;  
   
 public class PipePair {  
   
@@ -30,6 +32,9 @@ public class PipePair {
   
     private final Rectangle top = new Rectangle();  
     private final Rectangle bottom = new Rectangle();  
+      
+    // NUEVO: Estrategia de movimiento (Strategy Pattern)  
+    private PipeMovementStrategy movementStrategy = new HorizontalPipeMovement();  
   
     public PipePair(float startX, float centerY, float gapSize, float speed) {  
         loadTextures();  
@@ -53,7 +58,12 @@ public class PipePair {
     }  
   
     public void update(float dt) {  
-        x -= speed * dt;  
+        // MODIFICADO: Delegar movimiento a la estrategia  
+        if (movementStrategy != null) {  
+            movementStrategy.update(this, dt);  
+        }  
+          
+        // Actualizar posiciones de los rectángulos  
         top.setX(x);  
         bottom.setX(x);  
     }  
@@ -70,13 +80,37 @@ public class PipePair {
         bottom.set(x, centerY - half - config.PIPE_HEIGHT, width, config.PIPE_HEIGHT);  
     }  
   
+    // Getters existentes  
     public Rectangle getTopBounds()    { return top; }  
     public Rectangle getBottomBounds() { return bottom; }  
     public float getX()                { return x; }  
     public float getRight()            { return x + width; }  
     public boolean isOffScreen()       { return getRight() < 0; }  
     public float getCenterX()          { return x + width * 0.5f; }  
-  
+      
+    // NUEVO: Getter para centerY  
+    public float getCenterY()          { return centerY; }  
+      
+    // NUEVO: Getter para speed  
+    public float getSpeed()            { return speed; }  
+      
+    // Setters existentes  
     public void setSpeed(float speed)  { this.speed = speed; }  
     public void setGap(float gap)      { this.gapSize = gap; recomputeRects(); }  
+      
+    // NUEVO: Setter para x (usado por estrategias)  
+    public void setX(float x) {  
+        this.x = x;  
+    }  
+      
+    // NUEVO: Setter para centerY (usado por estrategias)  
+    public void setCenterY(float centerY) {  
+        this.centerY = centerY;  
+        recomputeRects(); // Recalcular rectángulos cuando cambia centerY  
+    }  
+      
+    // NUEVO: Método para cambiar estrategia en runtime  
+    public void setMovementStrategy(PipeMovementStrategy strategy) {  
+        this.movementStrategy = strategy;  
+    }  
 }

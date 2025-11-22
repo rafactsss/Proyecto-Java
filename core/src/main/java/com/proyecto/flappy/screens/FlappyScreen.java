@@ -117,7 +117,8 @@ public class FlappyScreen extends ScreenAdapter {
                 }  
   
                 bird.update(dt);  
-                pipes.update(dt);  
+                // CAMBIO PRINCIPAL: Pasar el score actual a pipes.update()  
+                pipes.update(dt, score.getScore());  
   
                 // Colisión (después del "grace time")  
                 if (runTime > START_GRACE && collisions.check(bird, pipes.getPipes())) {  
