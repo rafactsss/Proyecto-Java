@@ -15,13 +15,13 @@ public class GameConfig {
     public final float BIRD_START_X = 160f;  
     public final float BIRD_START_Y = WORLD_HEIGHT / 2f;
     // Tubos  
-    public final float PIPE_WIDTH   = 52f;  
+    public final float PIPE_WIDTH   = 90f;  
     public final float PIPE_HEIGHT  = 320f;  
   
     // Gap (hueco)  
     public final float PIPE_GAP_START = 150f;  
     public final float PIPE_GAP_MIN   = 120f;  
-  
+   
     // Márgenes  
     public final float GAP_MARGIN_TOP    = 40f;  
     public final float GAP_MARGIN_BOTTOM = 60f;  
